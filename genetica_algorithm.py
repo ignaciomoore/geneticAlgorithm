@@ -189,8 +189,8 @@ for n in range(num_iteration):
         
     makespan_record.append(Tbest)
 '''----------result----------'''
-print("optimal sequence",sequence_best) # Sequence of Jobs
-print("optimal value:%f"%Tbest)
+print("Optimal sequence",sequence_best) # Sequence of Jobs
+print("Optimal value:%f"%Tbest)
 print('the elapsed time:%s'% (time.time() - start_time))
 
 '''
