@@ -21,13 +21,13 @@ from testing import *
 ''' ================= initialization setting ======================'''
 
 
-pt_tmp = pd.read_excel("JSP_dataset.xlsx", sheet_name="Processing Time", index_col =[0])
-ms_tmp = pd.read_excel("JSP_dataset.xlsx", sheet_name="Machines Sequence", index_col =[0])
+#pt_tmp = pd.read_excel("JSP_dataset.xlsx", sheet_name="Processing Time", index_col =[0])
+#ms_tmp = pd.read_excel("JSP_dataset.xlsx", sheet_name="Machines Sequence", index_col =[0])
 
-#file = open("data.txt")
-#data = fileToDataFrame(file, 15)
-#pt_tmp = data[0]
-#ms_tmp = data[1]
+file = open("data.txt")
+data = fileToDataFrame(file, 15)
+pt_tmp = data[0]
+ms_tmp = data[1]
 
 dfshape = pt_tmp.shape
 num_mc = dfshape[1] # number of machines
@@ -190,6 +190,7 @@ for n in range(num_iteration):
     makespan_record.append(Tbest)
 '''----------result----------'''
 print("Optimal sequence", sequence_best)    # Sequence of Jobs ?
+print("Sequence size: ", sequence_best.__len__())
 print("Optimal value:%f"%Tbest)
 print('the elapsed time:%s'% (time.time() - start_time))
 
@@ -210,6 +211,7 @@ import pandas as pd
 import chart_studio.plotly as py
 import plotly.figure_factory as ff
 import datetime
+import plotly
 
 m_keys = [j+1 for j in range(num_mc)]
 j_keys = [j for j in range(num_job)]
@@ -217,6 +219,7 @@ key_count = {key: 0 for key in j_keys}
 j_count = {key: 0 for key in j_keys}
 m_count = {key: 0 for key in m_keys}
 j_record = {}
+kkk = {}
 for i in sequence_best:
     gen_t = int(pt[i][key_count[i]])
     gen_m = int(ms[i][key_count[i]])
@@ -230,17 +233,29 @@ for i in sequence_best:
     
     start_time = str(datetime.timedelta(seconds=j_count[i]-pt[i][key_count[i]])) # convert seconds to hours, minutes and seconds
     end_time = str(datetime.timedelta(seconds=j_count[i]))
+
+    ss = j_count[i]-pt[i][key_count[i]]
+    ee = j_count[i]
         
     j_record[(i, gen_m)] = [start_time, end_time]
+
+    kkk[(i, gen_m)] = [ss, ee]
     
     key_count[i] = key_count[i]+1
-#print(j_record)
 
-df=[]
+
+dff = []
 for m in m_keys:
     for j in j_keys:
-        df.append(dict(Task='Machine %s'%(m), Start='2018-07-14 %s'%(str(j_record[(j,m)][0])), Finish='2018-07-14 %s'%(str(j_record[(j,m)][1])),Resource='Job %s'%(j+1)))
-#print(df)
+        dff.append([m, kkk[(j, m)][0], kkk[(j, m)][1], j+1])
+print(dff)
+
+
+df = []
+for m in m_keys:
+    for j in j_keys:
+        df.append(dict(Task='Machine %s'%(m), Start='2018-07-14 %s'%(str(j_record[(j, m)][0])), Finish='2018-07-14 %s'%(str(j_record[(j,m)][1])),Resource='Job %s'%(j+1)))
+print(df)
 
 r = lambda: random.randint(0, 255)
 colors = ['#%02X%02X%02X' % (r(), r(), r())]
@@ -250,6 +265,9 @@ for i in j_keys:
 
 fig = ff.create_gantt(df, colors=colors, index_col='Resource', show_colorbar=True, group_tasks=True, showgrid_x=True, title='Job shop Schedule')
 
-fig.show()
+#fig = ff.create_gantt(df, index_col='Resource', show_colorbar=True, group_tasks=True, showgrid_x=True, title='Job shop Schedule')
+
+#fig.show()
+plotly.offline.plot(fig)
 
 #py.iplot(fig, filename='GA_job_shop_scheduling', world_readable=True)
