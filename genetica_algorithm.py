@@ -231,8 +231,8 @@ for i in sequence_best:
     elif m_count[gen_m] > j_count[i]:
         j_count[i] = m_count[gen_m]
     
-    start_time = str(datetime.timedelta(seconds=j_count[i]-pt[i][key_count[i]])) # convert seconds to hours, minutes and seconds
-    end_time = str(datetime.timedelta(seconds=j_count[i]))
+    start_time = str(datetime.timedelta(minutes=j_count[i]-pt[i][key_count[i]])) # convert seconds to hours, minutes and seconds
+    end_time = str(datetime.timedelta(minutes=j_count[i]))
 
     ss = j_count[i]-pt[i][key_count[i]]
     ee = j_count[i]
@@ -249,6 +249,21 @@ for m in m_keys:
     for j in j_keys:
         dff.append([m, kkk[(j, m)][0], kkk[(j, m)][1], j+1])
 print(dff)
+
+
+results = np.zeros((num_mc, int(Tbest)+2))
+for jj in dff:
+    for mi in range(jj[2]-jj[1]):
+        results[jj[0]-1][jj[1]+mi] = jj[3]
+
+
+# HAVENT TESTED THIS YET
+minutes = np.array()
+for i in range(int(Tbest)+2):
+    minutes.append(i)
+machines = np.array()
+np.insert(results, 0, minutes, 0)
+print(results)
 
 
 df = []
