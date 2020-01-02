@@ -2,23 +2,23 @@
 import pandas as pd
 import plotly.figure_factory as ff
 
-def lineToArray(line):
+def lineToArray(line, numberOfMachines):
     p = line.strip()
     nums = p.split(" ")
-    while nums.__len__() > 15:
+    while nums.__len__() > numberOfMachines:
         nums.remove('')
 
     return list(map(int, nums))
 
 
-def fileToDataFrame(file, tableSize):
+def fileToDataFrame(file, numberOfJobs, numberOfMachines):
     file.readline()
 
     timeData = []
 
-    for i in range(tableSize):
+    for i in range(numberOfJobs):
         f = file.readline()
-        f = lineToArray(f)
+        f = lineToArray(f, numberOfMachines)
         timeData.append(f)
 
     time = pd.DataFrame(timeData)
@@ -27,9 +27,9 @@ def fileToDataFrame(file, tableSize):
 
     machineData = []
 
-    for i in range(tableSize):
+    for i in range(numberOfJobs):
         f = file.readline()
-        f = lineToArray(f)
+        f = lineToArray(f, numberOfMachines)
         machineData.append(f)
 
     mach = pd.DataFrame(machineData)
@@ -37,11 +37,19 @@ def fileToDataFrame(file, tableSize):
     return (time, mach)
 
 
+def getNumberOfJobs(filename):
+    name = filename.split("_")
+    name[1] = name[1][:-1]
+    return int(name[1])
+
+
+def getNumberOfMachines(filename):
+    name = filename.split("_")
+    mach = name[2].split(".")
+    return int(mach[0][:-1])
+
+
 if __name__ == "__main__":
     import numpy as np
 
-    results = np.array()
-
-    for i in range(5):
-        results.append(i)
-    print(results)
+    print(getNumberOfMachines("data_15J_15M.txt"))

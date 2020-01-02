@@ -24,8 +24,10 @@ from testing import *
 #pt_tmp = pd.read_excel("JSP_dataset.xlsx", sheet_name="Processing Time", index_col =[0])
 #ms_tmp = pd.read_excel("JSP_dataset.xlsx", sheet_name="Machines Sequence", index_col =[0])
 
-file = open("data.txt")
-data = fileToDataFrame(file, 15)
+filename = input("Please input the file name: ")
+
+file = open(filename)
+data = fileToDataFrame(file, getNumberOfJobs(filename), getNumberOfMachines(filename))
 pt_tmp = data[0]
 ms_tmp = data[1]
 
@@ -42,7 +44,7 @@ ms = [list(map(int,ms_tmp.iloc[i])) for i in range(num_job)]
 
 # raw_input is used in python 2
 population_size = int(input('Please input the size of population: ') or 30)                 # default value is 30
-crossover_rate = float(input('Please input the size of Crossover Rate: ') or 0.8)           # default value is 0.8
+crossover_rate = float(input('Please input the size of Crossover Rate: ') or 0.8)           # default value is 0.8, range (0.6, 0.9)
 mutation_rate = float(input('Please input the size of Mutation Rate: ') or 0.2)             # default value is 0.2
 mutation_selection_rate = float(input('Please input the mutation selection rate: ') or 0.2)
 num_mutation_jobs = round(num_gene*mutation_selection_rate)
@@ -115,7 +117,7 @@ for n in range(num_iteration):
                     if job_count[chg_job][0] == num_mc:
                         break     
     
-    '''--------mutatuon--------'''   
+    '''--------mutation--------'''
     for m in range(len(offspring_list)):
         mutation_prob = np.random.rand()
         if mutation_rate >= mutation_prob:
@@ -127,7 +129,7 @@ for n in range(num_iteration):
             offspring_list[m][m_chg[num_mutation_jobs-1]] = t_value_last                # move the value of the first mutation position to the last mutation position
   
     
-    '''--------fitness value(calculate makespan)-------------'''
+    '''--------fitness value (calculate makespan)-------------'''
     total_chromosome = copy.deepcopy(parent_list)+copy.deepcopy(offspring_list) # parent and offspring chromosomes combination
     chrom_fitness, chrom_fit = [], []
     total_fitness = 0
@@ -157,7 +159,7 @@ for n in range(num_iteration):
         total_fitness = total_fitness+chrom_fitness[m]
 
     
-    '''----------selection(roulette wheel approach)----------'''
+    '''----------selection (roulette wheel approach)----------'''
     pk, qk = [], []
     
     for i in range(population_size*2):
@@ -219,7 +221,7 @@ key_count = {key: 0 for key in j_keys}
 j_count = {key: 0 for key in j_keys}
 m_count = {key: 0 for key in m_keys}
 j_record = {}
-kkk = {}
+#kkk = {}
 for i in sequence_best:
     gen_t = int(pt[i][key_count[i]])
     gen_m = int(ms[i][key_count[i]])
@@ -234,16 +236,16 @@ for i in sequence_best:
     start_time = str(datetime.timedelta(minutes=j_count[i]-pt[i][key_count[i]])) # convert seconds to hours, minutes and seconds
     end_time = str(datetime.timedelta(minutes=j_count[i]))
 
-    ss = j_count[i]-pt[i][key_count[i]]
-    ee = j_count[i]
+    #ss = j_count[i]-pt[i][key_count[i]]
+    #ee = j_count[i]
         
     j_record[(i, gen_m)] = [start_time, end_time]
 
-    kkk[(i, gen_m)] = [ss, ee]
+    #kkk[(i, gen_m)] = [ss, ee]
     
     key_count[i] = key_count[i]+1
 
-
+'''
 dff = []
 for m in m_keys:
     for j in j_keys:
@@ -264,13 +266,12 @@ for i in range(int(Tbest)+2):
 machines = np.array()
 np.insert(results, 0, minutes, 0)
 print(results)
-
+'''
 
 df = []
 for m in m_keys:
     for j in j_keys:
         df.append(dict(Task='Machine %s'%(m), Start='2018-07-14 %s'%(str(j_record[(j, m)][0])), Finish='2018-07-14 %s'%(str(j_record[(j,m)][1])),Resource='Job %s'%(j+1)))
-print(df)
 
 r = lambda: random.randint(0, 255)
 colors = ['#%02X%02X%02X' % (r(), r(), r())]
