@@ -1,28 +1,14 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Jul 13 17:24:51 2018
-Author: cheng-man wu
-LinkedIn: www.linkedin.com/in/chengmanwu
-Github: https://github.com/wurmen
-"""
-import random
-
-import inline as inline
-import matplotlib
 
 '''==========Solving job shop scheduling problem by gentic algorithm in python======='''
 # importing required modules
-import pandas as pd
 import numpy as np
+import random
 import time
 import copy
 from testing import *
 
 ''' ================= initialization setting ======================'''
-
-
-#pt_tmp = pd.read_excel("JSP_dataset.xlsx", sheet_name="Processing Time", index_col =[0])
-#ms_tmp = pd.read_excel("JSP_dataset.xlsx", sheet_name="Machines Sequence", index_col =[0])
 
 filename = input("Please input the file name: ")
 
@@ -32,17 +18,15 @@ pt_tmp = data[0]
 ms_tmp = data[1]
 
 dfshape = pt_tmp.shape
-num_mc = dfshape[1] # number of machines
-num_job = dfshape[0] # number of jobs
-num_gene = num_mc*num_job # number of genes in a chromosome
+num_mc = dfshape[1]         # number of machines
+num_job = dfshape[0]        # number of jobs
+num_gene = num_mc*num_job   # number of genes in a chromosome
 
 pt = [list(map(int, pt_tmp.iloc[i])) for i in range(num_job)]
 ms = [list(map(int,ms_tmp.iloc[i])) for i in range(num_job)]
 
 
-
-
-# raw_input is used in python 2
+# inputs
 population_size = int(input('Please input the size of population: ') or 30)                 # default value is 30
 crossover_rate = float(input('Please input the size of Crossover Rate: ') or 0.8)           # default value is 0.8, range (0.6, 0.9)
 mutation_rate = float(input('Please input the size of Mutation Rate: ') or 0.2)             # default value is 0.2
@@ -199,7 +183,7 @@ print('the elapsed time:%s'% (time.time() - start_time))
 
 
 import matplotlib.pyplot as plt
-#%matplotlib inline
+
 plt.plot([i for i in range(len(makespan_record))],makespan_record,'b')
 plt.ylabel('makespan',fontsize=15)
 plt.xlabel('generation',fontsize=15)
@@ -209,8 +193,6 @@ plt.show()
 '''--------plot gantt chart-------'''
 
 
-import pandas as pd
-import chart_studio.plotly as py
 import plotly.figure_factory as ff
 import datetime
 import plotly
@@ -221,7 +203,7 @@ key_count = {key: 0 for key in j_keys}
 j_count = {key: 0 for key in j_keys}
 m_count = {key: 0 for key in m_keys}
 j_record = {}
-#kkk = {}
+
 for i in sequence_best:
     gen_t = int(pt[i][key_count[i]])
     gen_m = int(ms[i][key_count[i]])
@@ -236,37 +218,10 @@ for i in sequence_best:
     start_time = str(datetime.timedelta(minutes=j_count[i]-pt[i][key_count[i]])) # convert seconds to hours, minutes and seconds
     end_time = str(datetime.timedelta(minutes=j_count[i]))
 
-    #ss = j_count[i]-pt[i][key_count[i]]
-    #ee = j_count[i]
-        
     j_record[(i, gen_m)] = [start_time, end_time]
 
-    #kkk[(i, gen_m)] = [ss, ee]
-    
     key_count[i] = key_count[i]+1
 
-'''
-dff = []
-for m in m_keys:
-    for j in j_keys:
-        dff.append([m, kkk[(j, m)][0], kkk[(j, m)][1], j+1])
-print(dff)
-
-
-results = np.zeros((num_mc, int(Tbest)+2))
-for jj in dff:
-    for mi in range(jj[2]-jj[1]):
-        results[jj[0]-1][jj[1]+mi] = jj[3]
-
-
-# HAVENT TESTED THIS YET
-minutes = np.array()
-for i in range(int(Tbest)+2):
-    minutes.append(i)
-machines = np.array()
-np.insert(results, 0, minutes, 0)
-print(results)
-'''
 
 df = []
 for m in m_keys:
@@ -281,9 +236,4 @@ for i in j_keys:
 
 fig = ff.create_gantt(df, colors=colors, index_col='Resource', show_colorbar=True, group_tasks=True, showgrid_x=True, title='Job shop Schedule')
 
-#fig = ff.create_gantt(df, index_col='Resource', show_colorbar=True, group_tasks=True, showgrid_x=True, title='Job shop Schedule')
-
-#fig.show()
 plotly.offline.plot(fig)
-
-#py.iplot(fig, filename='GA_job_shop_scheduling', world_readable=True)
